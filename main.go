@@ -1,10 +1,20 @@
 package main
 
 import (
+    "log"
+    "os"
+
     "github.com/gofiber/fiber/v2"
+    "github.com/joho/godotenv"
 )
 
 func main() {
+    // Load environment variables from .env file if it exists
+    err := godotenv.Load()
+    if err != nil {
+        log.Println("No .env file found")
+    }
+
     // Create a new Fiber instance
     app := fiber.New()
 
@@ -14,6 +24,12 @@ func main() {
         return c.SendString("Hello, World!")
     })
 
-    // Start the Fiber app on port 3000
-    app.Listen(":3000")
+    // Fetch the port number from the environment variable, default to 3000 if not set
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "3000"
+    }
+
+    // Start the Fiber app on the specified port
+    log.Fatal(app.Listen(":" + port))
 }
